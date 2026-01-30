@@ -1,0 +1,155 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  projects      Project[]
+  workspaces    WorkspaceMember[]
+  drawings      Drawing[]
+  comments      Comment[]
+  versions      Version[]
+
+  @@index([email])
+}
+
+model Workspace {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  description String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  projects  Project[]
+  members   WorkspaceMember[]
+
+  @@index([slug])
+}
+
+model WorkspaceMember {
+  id          String   @id @default(cuid())
+  workspaceId String
+  userId      String
+  role        String   @default("member") // admin, editor, viewer
+  createdAt   DateTime @default(now())
+  
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([workspaceId])
+  @@index([userId])
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  workspaceId String
+  ownerId     String
+  thumbnail   String?
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  owner       User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  drawings    Drawing[]
+  versions    Version[]
+  comments    Comment[]
+  collaborators ProjectCollaborator[]
+
+  @@index([workspaceId])
+  @@index([ownerId])
+}
+
+model ProjectCollaborator {
+  id        String   @id @default(cuid())
+  projectId String
+  userId    String
+  role      String   @default("editor") // editor, viewer
+  createdAt DateTime @default(now())
+  
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@index([projectId])
+}
+
+model Drawing {
+  id        String   @id @default(cuid())
+  projectId String
+  userId    String
+  type      String   // "rect", "circle", "line", "text", "image", "freehand"
+  x         Float
+  y         Float
+  width     Float
+  height    Float
+  rotation  Float    @default(0)
+  fill      String   @default("#000000")
+  stroke    String   @default("#000000")
+  strokeWidth Float @default(1)
+  opacity   Float    @default(1)
+  zIndex    Int      @default(0)
+  data      Json     // Additional shape-specific data
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User @relation(fields: [userId], references: [id])
+
+  @@index([projectId])
+  @@index([userId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  projectId String
+  userId    String
+  content   String
+  x         Float?   // Position on canvas
+  y         Float?
+  resolved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  replies   Comment[] @relation("CommentReplies")
+  parentId  String?
+  parent    Comment? @relation("CommentReplies", fields: [parentId], references: [id])
+
+  @@index([projectId])
+  @@index([userId])
+}
+
+model Version {
+  id        String   @id @default(cuid())
+  projectId String
+  userId    String
+  name      String   @default("Snapshot")
+  snapshot  Json     // Entire canvas state
+  createdAt DateTime @default(now())
+  
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User @relation(fields: [userId], references: [id])
+
+  @@index([projectId])
+  @@index([userId])
+}
