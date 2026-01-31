@@ -14,6 +14,7 @@ export const DashboardPage: React.FC<{ onProjectSelect?: (projectId: string) => 
   const [showNewProject, setShowNewProject] = useState(false);
   const [projectName, setProjectName] = useState("");
   const [projectDesc, setProjectDesc] = useState("");
+  const [isPublic, setIsPublic] = useState(false);
 
   useEffect(() => {
     fetchProjects();
@@ -33,10 +34,11 @@ export const DashboardPage: React.FC<{ onProjectSelect?: (projectId: string) => 
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await projectService.create(projectName, projectDesc);
+      const response = await projectService.create(projectName, projectDesc, isPublic);
       setProjects([...projects, response.data]);
       setProjectName("");
       setProjectDesc("");
+      setIsPublic(false);
       setShowNewProject(false);
     } catch (error) {
       console.error("Failed to create project:", error);
@@ -90,6 +92,16 @@ export const DashboardPage: React.FC<{ onProjectSelect?: (projectId: string) => 
               onChange={(e) => setProjectDesc(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
+            <div className="flex items-center mb-4">
+              <input
+                type="checkbox"
+                id="isPublic"
+                checked={isPublic}
+                onChange={(e) => setIsPublic(e.target.checked)}
+                className="mr-2"
+              />
+              <label htmlFor="isPublic" className="text-gray-700">Public Project</label>
+            </div>
             <div className="flex gap-2">
               <button
                 type="submit"

@@ -25,8 +25,8 @@ export const authService = {
 
 export const projectService = {
   list: () => api.get("/api/projects"),
-  create: (name: string, description: string) =>
-    api.post("/api/projects", { name, description }),
+  create: (name: string, description: string, isPublic: boolean) =>
+    api.post("/api/projects", { name, description, isPublic }),
   get: (projectId: string) => api.get(`/api/projects/${projectId}`),
   update: (projectId: string, data: any) =>
     api.put(`/api/projects/${projectId}`, data),

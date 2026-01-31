@@ -75,7 +75,7 @@ class MockDatabase {
   }
 
   // Project operations
-  createProject(name: string, description: string | undefined, workspaceId: string, ownerId: string) {
+  createProject(name: string, description: string | undefined, workspaceId: string, ownerId: string, isPublic: boolean = false) {
     const id = uuidv4();
     const project: Project = {
       id,
@@ -83,7 +83,7 @@ class MockDatabase {
       description,
       workspaceId,
       ownerId,
-      isPublic: false,
+      isPublic,
       createdAt: new Date(),
       updatedAt: new Date(),
     };

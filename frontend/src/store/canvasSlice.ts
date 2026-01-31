@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { DrawingShape, CanvasState } from "../types";
 
-interface CanvasSliceState extends CanvasState {}
+interface CanvasSliceState extends CanvasState { }
 
 const initialState: CanvasSliceState = {
   shapes: [],
@@ -25,6 +25,15 @@ const canvasSlice = createSlice({
         state.shapes[index] = action.payload;
         state.shapes.sort((a, b) => a.zIndex - b.zIndex);
       }
+    },
+    upsertShape: (state, action: PayloadAction<DrawingShape>) => {
+      const index = state.shapes.findIndex((s) => s.id === action.payload.id);
+      if (index >= 0) {
+        state.shapes[index] = action.payload;
+      } else {
+        state.shapes.push(action.payload);
+      }
+      state.shapes.sort((a, b) => a.zIndex - b.zIndex);
     },
     deleteShape: (state, action: PayloadAction<string>) => {
       state.shapes = state.shapes.filter((s) => s.id !== action.payload);
@@ -52,6 +61,7 @@ const canvasSlice = createSlice({
 export const {
   addShape,
   updateShape,
+  upsertShape,
   deleteShape,
   setShapes,
   selectShape,

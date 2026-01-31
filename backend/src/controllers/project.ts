@@ -31,7 +31,7 @@ export const projectController = {
         return;
       }
 
-      const { name, description, workspaceId } = req.body;
+      const { name, description, workspaceId, isPublic } = req.body;
 
       if (!name) {
         res.status(400).json({ error: "Project name is required" });
@@ -40,7 +40,7 @@ export const projectController = {
 
       const workspace = workspaceId || uuidv4();
 
-      const project = mockDb.createProject(name, description, workspace, userId);
+      const project = mockDb.createProject(name, description, workspace, userId, isPublic);
 
       const owner = mockDb.findUserById(userId);
       res.status(201).json({
