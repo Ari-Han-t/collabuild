@@ -37,7 +37,7 @@ export const LoginPage: React.FC<{ onSuccess?: () => void }> = ({ onSuccess }) =
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-8">
-        <h1 className="text-3xl font-bold text-center mb-2">CollaBuild</h1>
+        <h1 className="text-3xl font-bold text-center mb-2 text-gray-900">CollaBuild</h1>
         <p className="text-gray-600 text-center mb-6">
           Real-time Collaborative Design
         </p>
@@ -55,7 +55,7 @@ export const LoginPage: React.FC<{ onSuccess?: () => void }> = ({ onSuccess }) =
               placeholder="Full Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 placeholder-gray-500"
               required
             />
           )}
@@ -64,7 +64,7 @@ export const LoginPage: React.FC<{ onSuccess?: () => void }> = ({ onSuccess }) =
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 placeholder-gray-500"
             required
           />
           <input
@@ -72,7 +72,7 @@ export const LoginPage: React.FC<{ onSuccess?: () => void }> = ({ onSuccess }) =
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 placeholder-gray-500"
             required
           />
           <button

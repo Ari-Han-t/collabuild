@@ -103,7 +103,7 @@ export const EditorPage: React.FC<EditorPageProps> = ({ projectId, onBack }) => 
     <div className="flex flex-col h-screen bg-gray-100">
       <header className="bg-white shadow p-4 flex justify-between items-center z-10">
         <div className="flex items-center gap-4">
-          <h1 className="text-2xl font-bold">{project.name}</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{project.name}</h1>
           <div className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm flex items-center">
             <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
             Live

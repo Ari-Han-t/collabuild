@@ -83,14 +83,14 @@ export const DashboardPage: React.FC<{ onProjectSelect?: (projectId: string) => 
               placeholder="Project Name"
               value={projectName}
               onChange={(e) => setProjectName(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 placeholder-gray-500"
               required
             />
             <textarea
               placeholder="Description"
               value={projectDesc}
               onChange={(e) => setProjectDesc(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 placeholder-gray-500"
             />
             <div className="flex items-center mb-4">
               <input
@@ -112,7 +112,7 @@ export const DashboardPage: React.FC<{ onProjectSelect?: (projectId: string) => 
               <button
                 type="button"
                 onClick={() => setShowNewProject(false)}
-                className="px-6 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
+                className="px-6 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 text-gray-800"
               >
                 Cancel
               </button>
@@ -147,7 +147,7 @@ export const DashboardPage: React.FC<{ onProjectSelect?: (projectId: string) => 
                   style={project.thumbnail ? { backgroundImage: `url(${project.thumbnail})` } : {}}
                 />
                 <div className="p-6">
-                  <h3 className="font-semibold text-lg mb-2">{project.name}</h3>
+                  <h3 className="font-semibold text-lg mb-2 text-gray-900">{project.name}</h3>
                   <p className="text-gray-600 text-sm mb-4">{project.description}</p>
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-gray-500">{project.owner.name}</span>
