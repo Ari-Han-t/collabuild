@@ -139,7 +139,7 @@ export const EditorPage: React.FC<EditorPageProps> = ({ projectId, onBack }) => 
                 <div
                   key={shape.id}
                   onClick={() => dispatch(selectShape(shape.id))}
-                  className={`p-2 rounded cursor-pointer text-sm flex items-center justify-between ${selectedShapeId === shape.id ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-50'}`}
+                  className={`p-2 rounded cursor-pointer text-sm flex items-center justify-between ${selectedShapeId === shape.id ? 'bg-blue-100 text-blue-700' : 'text-gray-900 hover:bg-gray-100'}`}
                 >
                   <span className="capitalize">{shape.type} {shapes.length - i}</span>
                   {selectedShapeId === shape.id && <span className="w-2 h-2 bg-blue-500 rounded-full"></span>}

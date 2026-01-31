@@ -260,13 +260,13 @@ export const Canvas: React.FC<CanvasProps> = ({ projectId, onShapeUpdate }) => {
   return (
     <div className="flex flex-col gap-4 relative">
       <div className="flex gap-2 bg-gray-100 p-3 rounded-lg overflow-x-auto">
-        <button title="Select Tool" onClick={() => setCurrentTool("select")} className={`px-3 py-2 rounded ${currentTool === "select" ? "bg-blue-500 text-white" : "bg-white"}`}>Select</button>
-        <button title="Rectangle Tool" onClick={() => setCurrentTool("rect")} className={`px-3 py-2 rounded ${currentTool === "rect" ? "bg-blue-500 text-white" : "bg-white"}`}>Rect</button>
-        <button title="Circle Tool" onClick={() => setCurrentTool("circle")} className={`px-3 py-2 rounded ${currentTool === "circle" ? "bg-blue-500 text-white" : "bg-white"}`}>Circle</button>
-        <button title="Freehand Pen" onClick={() => setCurrentTool("freehand")} className={`px-3 py-2 rounded ${currentTool === "freehand" ? "bg-blue-500 text-white" : "bg-white"}`}>Pen</button>
-        <button title="Text Tool" onClick={() => setCurrentTool("text")} className={`px-3 py-2 rounded ${currentTool === "text" ? "bg-blue-500 text-white" : "bg-white"}`}>Text</button>
-        <button title="Eraser Tool" onClick={() => setCurrentTool("eraser")} className={`px-3 py-2 rounded ${currentTool === "eraser" ? "bg-blue-500 text-white" : "bg-white"}`}>Eraser</button>
-        <input title="Color Picker" type="color" value={currentColor} onChange={(e) => setCurrentColor(e.target.value)} className="ml-auto w-10 h-10 cursor-pointer rounded" />
+        <button title="Select Tool" onClick={() => setCurrentTool("select")} className={`px-3 py-2 rounded-lg font-medium shadow-sm border-2 transition-all ${currentTool === "select" ? "bg-blue-600 text-white border-blue-700" : "bg-white text-black border-gray-400 hover:border-gray-600 hover:bg-gray-50"}`}>Select</button>
+        <button title="Rectangle Tool" onClick={() => setCurrentTool("rect")} className={`px-3 py-2 rounded-lg font-medium shadow-sm border-2 transition-all ${currentTool === "rect" ? "bg-blue-600 text-white border-blue-700" : "bg-white text-black border-gray-400 hover:border-gray-600 hover:bg-gray-50"}`}>Rect</button>
+        <button title="Circle Tool" onClick={() => setCurrentTool("circle")} className={`px-3 py-2 rounded-lg font-medium shadow-sm border-2 transition-all ${currentTool === "circle" ? "bg-blue-600 text-white border-blue-700" : "bg-white text-black border-gray-400 hover:border-gray-600 hover:bg-gray-50"}`}>Circle</button>
+        <button title="Freehand Pen" onClick={() => setCurrentTool("freehand")} className={`px-3 py-2 rounded-lg font-medium shadow-sm border-2 transition-all ${currentTool === "freehand" ? "bg-blue-600 text-white border-blue-700" : "bg-white text-black border-gray-400 hover:border-gray-600 hover:bg-gray-50"}`}>Pen</button>
+        <button title="Text Tool" onClick={() => setCurrentTool("text")} className={`px-3 py-2 rounded-lg font-medium shadow-sm border-2 transition-all ${currentTool === "text" ? "bg-blue-600 text-white border-blue-700" : "bg-white text-black border-gray-400 hover:border-gray-600 hover:bg-gray-50"}`}>Text</button>
+        <button title="Eraser Tool" onClick={() => setCurrentTool("eraser")} className={`px-3 py-2 rounded-lg font-medium shadow-sm border-2 transition-all ${currentTool === "eraser" ? "bg-blue-600 text-white border-blue-700" : "bg-white text-black border-gray-400 hover:border-gray-600 hover:bg-gray-50"}`}>Eraser</button>
+        <input title="Color Picker" type="color" value={currentColor} onChange={(e) => setCurrentColor(e.target.value)} className="ml-auto w-10 h-10 cursor-pointer rounded-lg border-2 border-gray-400 shadow-sm" />
       </div>
       <div className="relative">
         <canvas
