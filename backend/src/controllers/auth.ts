@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import prisma from "../db/prisma";
 import { generateToken, hashPassword, comparePassword } from "../utils/auth";
+import { mockDb } from "../db/mock";
 
 export const authController = {
   async register(req: Request, res: Response): Promise<void> {
@@ -12,7 +12,7 @@ export const authController = {
         return;
       }
 
-      const existingUser = await prisma.user.findUnique({ where: { email } });
+      const existingUser = mockDb.findUserByEmail(email);
       if (existingUser) {
         res.status(409).json({ error: "User already exists" });
         return;
@@ -20,13 +20,7 @@ export const authController = {
 
       const hashedPassword = await hashPassword(password);
 
-      const user = await prisma.user.create({
-        data: {
-          email,
-          name,
-          password: hashedPassword,
-        },
-      });
+      const user = mockDb.createUser(email, name, hashedPassword);
 
       const token = generateToken(user.id);
 
@@ -54,7 +48,7 @@ export const authController = {
         return;
       }
 
-      const user = await prisma.user.findUnique({ where: { email } });
+      const user = mockDb.findUserByEmail(email);
       if (!user) {
         res.status(401).json({ error: "Invalid credentials" });
         return;
@@ -91,22 +85,19 @@ export const authController = {
         return;
       }
 
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          avatar: true,
-        },
-      });
+      const user = mockDb.findUserById(userId);
 
       if (!user) {
         res.status(404).json({ error: "User not found" });
         return;
       }
 
-      res.json(user);
+      res.json({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        avatar: user.avatar,
+      });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Failed to fetch profile" });

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import prisma from "../db/prisma";
 import { v4 as uuidv4 } from "uuid";
+import { mockDb } from "../db/mock";
 
 export const projectController = {
   async listProjects(req: Request, res: Response): Promise<void> {
@@ -11,25 +11,10 @@ export const projectController = {
         return;
       }
 
-      const projects = await prisma.project.findMany({
-        where: {
-          OR: [
-            { ownerId: userId },
-            { collaborators: { some: { userId } } },
-          ],
-        },
-        select: {
-          id: true,
-          name: true,
-          description: true,
-          thumbnail: true,
-          isPublic: true,
-          createdAt: true,
-          updatedAt: true,
-          owner: { select: { id: true, name: true } },
-        },
-        orderBy: { updatedAt: "desc" },
-      });
+      const projects = mockDb.getProjectsByOwner(userId).map((p) => ({
+        ...p,
+        owner: mockDb.findUserById(p.ownerId),
+      }));
 
       res.json(projects);
     } catch (error) {
@@ -53,50 +38,15 @@ export const projectController = {
         return;
       }
 
-      // Get or create default workspace
-      let workspace;
-      if (workspaceId) {
-        workspace = await prisma.workspace.findUnique({
-          where: { id: workspaceId },
-        });
-      } else {
-        workspace = await prisma.workspace.findFirst({
-          where: {
-            members: { some: { userId } },
-          },
-        });
+      const workspace = workspaceId || uuidv4();
 
-        if (!workspace) {
-          workspace = await prisma.workspace.create({
-            data: {
-              name: `${name}'s Workspace`,
-              slug: `workspace-${uuidv4().slice(0, 8)}`,
-              members: {
-                create: { userId, role: "admin" },
-              },
-            },
-          });
-        }
-      }
+      const project = mockDb.createProject(name, description, workspace, userId);
 
-      if (!workspace) {
-        res.status(404).json({ error: "Workspace not found" });
-        return;
-      }
-
-      const project = await prisma.project.create({
-        data: {
-          name,
-          description,
-          workspaceId: workspace.id,
-          ownerId: userId,
-        },
-        include: {
-          owner: { select: { id: true, name: true } },
-        },
+      const owner = mockDb.findUserById(userId);
+      res.status(201).json({
+        ...project,
+        owner: { id: owner?.id, name: owner?.name },
       });
-
-      res.status(201).json(project);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Failed to create project" });
@@ -113,36 +63,27 @@ export const projectController = {
         return;
       }
 
-      const project = await prisma.project.findUnique({
-        where: { id: projectId },
-        include: {
-          owner: { select: { id: true, name: true, avatar: true } },
-          collaborators: {
-            select: { userId: true, role: true },
-          },
-          drawings: {
-            orderBy: { zIndex: "asc" },
-          },
-        },
-      });
+      const project = mockDb.getProject(projectId);
 
       if (!project) {
         res.status(404).json({ error: "Project not found" });
         return;
       }
 
-      // Check access
-      const hasAccess =
-        project.ownerId === userId ||
-        project.collaborators.some((c) => c.userId === userId) ||
-        project.isPublic;
-
-      if (!hasAccess) {
+      if (project.ownerId !== userId && !project.isPublic) {
         res.status(403).json({ error: "Access denied" });
         return;
       }
 
-      res.json(project);
+      const drawings = mockDb.getProjectDrawings(projectId);
+      const owner = mockDb.findUserById(project.ownerId);
+
+      res.json({
+        ...project,
+        owner,
+        drawings,
+        collaborators: [],
+      });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Failed to fetch project" });
@@ -160,9 +101,7 @@ export const projectController = {
         return;
       }
 
-      const project = await prisma.project.findUnique({
-        where: { id: projectId },
-      });
+      const project = mockDb.getProject(projectId);
 
       if (!project) {
         res.status(404).json({ error: "Project not found" });
@@ -174,20 +113,18 @@ export const projectController = {
         return;
       }
 
-      const updated = await prisma.project.update({
-        where: { id: projectId },
-        data: {
-          name,
-          description,
-          isPublic,
-          thumbnail,
-        },
-        include: {
-          owner: { select: { id: true, name: true } },
-        },
+      const updated = mockDb.updateProject(projectId, {
+        name,
+        description,
+        isPublic,
+        thumbnail,
       });
 
-      res.json(updated);
+      const owner = mockDb.findUserById(updated?.ownerId || "");
+      res.json({
+        ...updated,
+        owner: { id: owner?.id, name: owner?.name },
+      });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Failed to update project" });
@@ -204,9 +141,7 @@ export const projectController = {
         return;
       }
 
-      const project = await prisma.project.findUnique({
-        where: { id: projectId },
-      });
+      const project = mockDb.getProject(projectId);
 
       if (!project) {
         res.status(404).json({ error: "Project not found" });
@@ -218,7 +153,7 @@ export const projectController = {
         return;
       }
 
-      await prisma.project.delete({ where: { id: projectId } });
+      mockDb.deleteProject(projectId);
 
       res.json({ message: "Project deleted" });
     } catch (error) {

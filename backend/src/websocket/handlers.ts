@@ -1,6 +1,6 @@
 import { Socket } from "socket.io";
-import prisma from "../db/prisma";
 import { verifyToken, extractToken } from "../utils/auth";
+import { mockDb } from "../db/mock";
 
 interface DrawingData {
   id: string;
@@ -57,41 +57,8 @@ export const setupWebSocket = (io: any) => {
       const { projectId, ...drawing } = data;
 
       try {
-        // Save to database
-        await prisma.drawing.upsert({
-          where: { id: drawing.id },
-          create: {
-            id: drawing.id,
-            projectId,
-            userId,
-            type: drawing.type,
-            x: drawing.x,
-            y: drawing.y,
-            width: drawing.width,
-            height: drawing.height,
-            rotation: drawing.rotation,
-            fill: drawing.fill,
-            stroke: drawing.stroke,
-            strokeWidth: drawing.strokeWidth,
-            opacity: drawing.opacity,
-            zIndex: drawing.zIndex,
-            data: drawing.data || {},
-          },
-          update: {
-            x: drawing.x,
-            y: drawing.y,
-            width: drawing.width,
-            height: drawing.height,
-            rotation: drawing.rotation,
-            fill: drawing.fill,
-            stroke: drawing.stroke,
-            strokeWidth: drawing.strokeWidth,
-            opacity: drawing.opacity,
-            zIndex: drawing.zIndex,
-            data: drawing.data || {},
-            updatedAt: new Date(),
-          },
-        });
+        // Save to mock database
+        mockDb.createDrawing(projectId, userId, drawing);
 
         // Broadcast to other users in project
         socket.to(`project:${projectId}`).emit("drawing:updated", drawing);
@@ -106,7 +73,7 @@ export const setupWebSocket = (io: any) => {
       const { projectId, drawingId } = data;
 
       try {
-        await prisma.drawing.delete({ where: { id: drawingId } });
+        mockDb.deleteDrawing(drawingId);
         socket.to(`project:${projectId}`).emit("drawing:deleted", { drawingId });
       } catch (error) {
         console.error("Failed to delete drawing:", error);
@@ -128,16 +95,17 @@ export const setupWebSocket = (io: any) => {
       const { projectId, content, x, y } = data;
 
       try {
-        const comment = await prisma.comment.create({
-          data: {
-            projectId,
-            userId,
-            content,
-            x: x || null,
-            y: y || null,
-          },
-          include: { user: { select: { id: true, name: true, avatar: true } } },
-        });
+        const comment = {
+          id: Math.random().toString(),
+          projectId,
+          userId,
+          content,
+          x: x || null,
+          y: y || null,
+          resolved: false,
+          user: { id: userId, name: "User", avatar: undefined },
+          createdAt: new Date(),
+        };
 
         io.to(`project:${projectId}`).emit("comment:added", comment);
       } catch (error) {
@@ -150,14 +118,14 @@ export const setupWebSocket = (io: any) => {
       const { projectId, name, snapshot } = data;
 
       try {
-        const version = await prisma.version.create({
-          data: {
-            projectId,
-            userId,
-            name: name || "Snapshot",
-            snapshot,
-          },
-        });
+        const version = {
+          id: Math.random().toString(),
+          projectId,
+          userId,
+          name: name || "Snapshot",
+          snapshot,
+          createdAt: new Date(),
+        };
 
         io.to(`project:${projectId}`).emit("version:created", version);
       } catch (error) {

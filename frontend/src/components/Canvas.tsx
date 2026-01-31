@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useAppSelector, useAppDispatch } from "../hooks/useRedux";
 import { setShapes, updateShape, deleteShape } from "../store/canvasSlice";
-import { drawRect, drawCircle, drawLine, drawText } from "./shapes";
+import { drawRect, drawCircle, drawLine, drawText } from "../canvas/shapes";
 import type { DrawingShape } from "../types";
 import { v4 as uuidv4 } from "uuid";
 
